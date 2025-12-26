@@ -1,0 +1,13 @@
+# PyTorch
+*.pth
+*.pt
+
+# IDE
+.idea/
+
+# Virtual env
+.venv/
+env/
+node_modules/
+images/
+

@@ -10,7 +10,12 @@ app.use(express.static('public'));
 app.use(cors())
 
 import userRouter from './routes/userRoutes.js';
+import productRouter from './routes/productRoutes.js';
+import homeRouter from './routes/homeRoutes.js';
+
 app.use('/api/users', userRouter);
+app.use('/api/products', productRouter);
+app.use('/api',homeRouter)
 app.use((err, req, res, next) => {
   console.error(err);
 

@@ -47,12 +47,12 @@ const login = asyncHandler(async (req, res) => {
     return res.status(200).cookie("accessToken", accessToken).cookie("refreshToken", refreshToken, options).json(new ApiResponse(200, updateduser, "User logged in successfully"))
 })
 const getProfile = asyncHandler(async (req, res) => {
-    const email = req.body.email
+    const email = req.userEmail
     const user = await User.findOne({email})
     return res.status(200).json(new ApiResponse(200, user, "Found successfully"))
 })
 const logout = asyncHandler(async (req, res) => {
-    const email = req.body.email
+    const email = req.userEmail
     await User.findOneAndUpdate({email}, { refreshToken: null }).select("-password -refreshToken")
     return res.status(200).clearCookie("accessToken", options).clearCookie("refreshToken", options).json(new ApiResponse(200, null, "Logged out successfully"))
 })

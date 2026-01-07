@@ -45,7 +45,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
     const imageUrl = result.secure_url;
     let finalCaption = req.body.description || null;
-
+    let fId = null
     try {
         const captionResponse = await axios.post(
             `${process.env.CAPTION_SERVER}/caption`,
@@ -61,13 +61,29 @@ const addProduct = asyncHandler(async (req, res) => {
         console.error("Caption service failed:", err.message);
         // fallback: keep user description or null
     }
+    try{
+        const embedResponse = await axios.post(
+            `${process.env.CAPTION_SERVER}/enterEmbedding`,
+            {
+                url: imageUrl
+            },
+            { timeout: 15000 } // prevent hanging forever
+        );
+
+        fId = embedResponse.data.faissId;
+    } catch (err) {
+        console.error("Embed service failed:", err.message);
+    }
     const product = await Product.create({
         name: req.body.name,
         price: req.body.price,
         description: finalCaption,
         owner: req.userId,
-        img_url: imageUrl
+        img_url: imageUrl,
+        faissId: fId,
+        indexed:true
     });
+    
 
     return res.status(201).json(
         new ApiResponse(201, product, "Product created successfully")

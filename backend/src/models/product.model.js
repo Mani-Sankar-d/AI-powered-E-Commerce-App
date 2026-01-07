@@ -18,15 +18,19 @@ const productSchema = new mongoose.Schema({
     img_url:{
       type:String
     },
-    owner_email:{
+    owner:{
       type:Schema.Types.ObjectId,
       ref:"User"
     },
-    clipId: {
+    faissId: {
     type: Number,
     unique: true,
-    index: true
-  }
+    sparse: true
+    },
+    indexed: {
+    type: Boolean,
+    default: false
+    }
 },{timestamps:true})
 
 export const Product = mongoose.model("Product",productSchema)

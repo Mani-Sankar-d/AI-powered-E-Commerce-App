@@ -30,6 +30,14 @@ const productSchema = new mongoose.Schema({
     indexed: {
     type: Boolean,
     default: false
+    },
+    status:{
+      type:String,
+      enum: ["PENDING","READY","FAILED"],
+      default:"PENDING"
+    },
+    mlError:{
+      type:String
     }
 },{timestamps:true})
 

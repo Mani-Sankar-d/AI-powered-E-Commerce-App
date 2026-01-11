@@ -32,7 +32,7 @@ clip_tokenizer = open_clip.get_tokenizer('ViT-B-32')
 clip_model = clip_model.to(device)
 
 
-def generate_caption(payload):
+async def generate_caption(payload):
     if "image" not in payload:
         raise ValueError("Missing required field: image")
 
@@ -49,7 +49,7 @@ def generate_caption(payload):
     return {"caption":caption}
 
 
-def generate_embeddings(payload):
+async def generate_embeddings(payload):
     if "image" not in payload:
         raise ValueError("Missing required field: image")
     image_url = payload["image"]

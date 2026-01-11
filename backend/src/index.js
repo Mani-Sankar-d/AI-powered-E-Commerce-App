@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config({path: 'D:/repos/AI-powered-E-commerce/backend/src/.env'})
+dotenv.config()
 
 import connectDB from './db/index.js'
 import { app }  from './app.js'

@@ -22,7 +22,7 @@ async def load_faiss():
 
 @app.post("/caption")
 async def caption(payload:dict):
-    # print("Reached endpoint")
+    print("Reached endpoint")
     caption = await generate_caption(payload)
     return caption
 

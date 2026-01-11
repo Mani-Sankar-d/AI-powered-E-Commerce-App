@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const BACKEND_URL = "http://localhost:3000/api/"; // keeping EXACTLY as you had
+const BACKEND_URL = "http://localhost:3000/api/";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -12,7 +12,49 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  /* -------------------------------
+  /* --------------------------------
+     Fetch products (reusable)
+  -------------------------------- */
+  async function fetchProducts() {
+    try {
+      const res = await fetch(BACKEND_URL, {
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch products");
+      }
+
+      const data = await res.json();
+      setProducts(data.data || []);
+      setAllProducts(data.data || []);
+      setError("");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /* --------------------------------
+     Initial fetch
+  -------------------------------- */
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  /* --------------------------------
+     Polling every 5 seconds
+  -------------------------------- */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchProducts();
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  /* --------------------------------
      Listen to navbar search events
   -------------------------------- */
   useEffect(() => {
@@ -24,38 +66,7 @@ export default function Home() {
     return () => window.removeEventListener("product-search", handler);
   }, []);
 
-  /* -------------------------------
-     Fetch products once
-  -------------------------------- */
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        setLoading(true);
-
-        const res = await fetch(BACKEND_URL, {
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const data = await res.json();
-
-        // backend response: { status, message, data: [...] }
-        setProducts(data.data || []);
-        setAllProducts(data.data || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchProducts();
-  }, []);
-
-  /* -------------------------------
+  /* --------------------------------
      Local name-based search
   -------------------------------- */
   useEffect(() => {
@@ -71,7 +82,7 @@ export default function Home() {
     setProducts(filtered);
   }, [query, allProducts]);
 
-  /* -------------------------------
+  /* --------------------------------
      Render states
   -------------------------------- */
   if (loading) {
@@ -90,7 +101,7 @@ export default function Home() {
     );
   }
 
-  /* -------------------------------
+  /* --------------------------------
      UI
   -------------------------------- */
   return (
@@ -100,9 +111,7 @@ export default function Home() {
       </h1>
 
       {products.length === 0 ? (
-        <p className="text-center text-gray-500">
-          No products found.
-        </p>
+        <p className="text-center text-gray-500">No products found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (
@@ -125,9 +134,28 @@ export default function Home() {
                   {product.name}
                 </h3>
 
-                <p className="text-sm text-gray-600 line-clamp-2">
-                  {product.description}
-                </p>
+                {/* Status */}
+                <span className="text-xs font-semibold">
+                  Status:{" "}
+                  <span
+                    className={
+                      product.status === "READY"
+                        ? "text-green-600"
+                        : product.status === "FAILED"
+                        ? "text-red-600"
+                        : "text-yellow-600"
+                    }
+                  >
+                    {product.status}
+                  </span>
+                </span>
+
+                {/* Caption only when READY */}
+                {product.status === "READY" && (
+                  <p className="text-sm text-gray-600">
+                    {product.description}
+                  </p>
+                )}
 
                 <span className="text-xl font-bold text-blue-600">
                   ₹{product.price}

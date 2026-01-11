@@ -21,9 +21,10 @@ async def load_faiss():
         print("Created new faiss index")
 
 @app.post("/caption")
-def caption(payload:dict):
+async def caption(payload:dict):
     # print("Reached endpoint")
-    return generate_caption(payload)
+    caption = await generate_caption(payload)
+    return caption
 
 @app.post("/enterEmbedding")
 async def computeEmbedding(payload:dict):

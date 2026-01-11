@@ -7,7 +7,11 @@ app.use(express.json());
 app.use(urlencoded({extended: true}));
 app.use(cookieParser());    
 app.use(express.static('public'));
-app.use(cors())
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
+
 
 import userRouter from './routes/userRoutes.js';
 import productRouter from './routes/productRoutes.js';

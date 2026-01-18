@@ -1,144 +1,91 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-const BACKEND_URL = "http://localhost:3000/api/products/new-product"
+import { API } from "../config/env";
 
 export default function AddProduct() {
+  const nav = useNavigate();
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState(null);
-  const [description, setDescription] = useState("");
+  const [desc, setDesc] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [err, setErr] = useState("");
 
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    setError("");
-
     if (!name || !price || !image) {
-      setError("Name, price and image are required");
+      setErr("Name, price and image required");
       return;
     }
 
     try {
       setLoading(true);
+      const fd = new FormData();
+      fd.append("name", name);
+      fd.append("price", price);
+      fd.append("image", image);
+      if (desc) fd.append("description", desc);
 
-      const formData = new FormData();
-      formData.append("name", name.trim());
-      formData.append("price", price);
-      formData.append("image", image);
+      const res = await fetch(`${API.products}/new-product`, {
+        method: "POST",
+        credentials: "include",
+        body: fd,
+      });
 
-      if (description.trim()) {
-        formData.append("description", description.trim());
-      }
-
-      const res = await fetch(
-        BACKEND_URL,
-        {
-          method: "POST",
-          body: formData,
-          credentials: "include",
-        }
-      );
-
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Upload failed");
-      }
-
-      navigate("/home", { replace: true });
-    } catch (err) {
-      setError(err.message);
+      if (!res.ok) throw new Error("Upload failed");
+      nav("/home");
+    } catch (e) {
+      setErr(e.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-semibold text-center mb-6">
-          Add Product
-        </h2>
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+      <form
+        onSubmit={submit}
+        className="bg-white p-8 rounded-xl shadow w-full max-w-md space-y-4"
+      >
+        <h2 className="text-2xl font-bold text-center">Add Product</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Product Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full border rounded px-3 py-2"
-            />
-          </div>
+        <input
+          placeholder="Product name"
+          className="w-full border p-2 rounded"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
-          {/* Price */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Price
-            </label>
-            <input
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="mt-1 w-full border rounded px-3 py-2"
-            />
-          </div>
+        <input
+          type="number"
+          placeholder="Price"
+          className="w-full border p-2 rounded"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
 
-          {/* Image */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Product Image
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
-              className="mt-1 w-full"
-            />
-          </div>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImage(e.target.files[0])}
+        />
 
-          {/* Description (optional) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Description (optional)
-            </label>
-            <textarea
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 w-full border rounded px-3 py-2"
-            />
-          </div>
+        <textarea
+          placeholder="Description (optional)"
+          className="w-full border p-2 rounded"
+          value={desc}
+          onChange={(e) => setDesc(e.target.value)}
+        />
 
-          {error && (
-            <p className="text-sm text-red-600 text-center">{error}</p>
-          )}
+        {err && <p className="text-red-500 text-sm">{err}</p>}
 
-          {/* Buttons */}
-          <div className="flex gap-3 pt-2">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-            >
-              {loading ? "Uploading..." : "Add Product"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate("/home")}
-              className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
+        <button
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 rounded"
+        >
+          {loading ? "Uploading…" : "Add Product"}
+        </button>
+      </form>
     </div>
   );
 }

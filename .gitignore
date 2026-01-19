@@ -6,6 +6,8 @@
 !.env.example
 env.*
 env.js
+worker_venv
+backend_env
 # ========================
 # Python
 # ========================

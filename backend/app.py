@@ -8,9 +8,12 @@ from routes.user import router as user_router
 from routes.product import router as product_router
 from routes.home import router as home_router
 from utils.errors import ApiError
+from db_init import init_db
 
 app = FastAPI()
-
+@app.on_event("startup")
+async def startup():
+    await init_db()
 # app.add_middleware(
 #     CORSMiddleware,
 #     allow_origins=["http://localhost:5173"],

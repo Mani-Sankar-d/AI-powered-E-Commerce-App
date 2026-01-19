@@ -19,7 +19,7 @@ app = FastAPI()
 #     allow_headers=["*"],
 # )
 @app.get("/")
-async def health():
+def f():
     return {"ok": True}
 @app.get("/health")
 async def health():

@@ -11,14 +11,16 @@ from utils.errors import ApiError
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["http://localhost:5173"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+@app.get("/health")
+async def health():
+    return {"ok": True}
 # app.mount("/public", StaticFiles(directory="public"), name="public")
 
 app.include_router(user_router, prefix="/api/users")

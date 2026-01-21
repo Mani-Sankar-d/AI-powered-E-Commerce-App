@@ -3,6 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { API } from "../config/env";
 
 export default function Login() {
+  console.log("ENV:", import.meta.env);
+  console.log("API BASE:", import.meta.env.VITE_API_BASE_URL);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);

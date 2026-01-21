@@ -16,6 +16,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://ai-powered-e-commerce-app-production.up.railway.app",
+        "https://ai-powered-e-commerce-app-copy-production.up.railway.app/api/products/"
     ],
     allow_credentials=True,
     allow_methods=["*"],

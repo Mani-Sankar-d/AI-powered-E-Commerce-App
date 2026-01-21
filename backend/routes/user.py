@@ -44,16 +44,16 @@ async def login_route(
         key="accessToken",
         value=cookies["accessToken"],
         httponly=True,
-        secure=False,        # ❗ False on localhost
-        samesite="lax",
+        secure=True,        # ❗ False on localhost
+        samesite="none",
         path="/"
     )
     resp.set_cookie(
         key="refreshToken",
         value=cookies["refreshToken"],
         httponly=True,
-        secure=False,        # ❗ False on localhost
-        samesite="lax",
+        secure=True,        # ❗ False on localhost
+        samesite="none",
         path="/"
     )
 

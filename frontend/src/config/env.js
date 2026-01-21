@@ -15,7 +15,7 @@ if (!API_BASE) {
   );
 }
 
-const BASE = API_BASE || "http://localhost:8000";
+const BASE = API_BASE;
 
 export const API = {
   users: `${BASE}/api/users`,

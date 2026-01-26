@@ -1,7 +1,7 @@
 # models/product.py
 from sqlalchemy import String, Integer, Boolean, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from models.base import Base
+from backend.models.base import Base
 
 class Product(Base):
     __tablename__ = "products"
@@ -23,3 +23,4 @@ class Product(Base):
 
     status: Mapped[str] = mapped_column(default="PENDING")
     ml_error: Mapped[str | None]
+    order_items = relationship("Order_item",back_populates="product")

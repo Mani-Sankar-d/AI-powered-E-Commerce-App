@@ -1,7 +1,7 @@
 # models/counter.py
 from sqlalchemy import String, Integer
 from sqlalchemy.orm import Mapped, mapped_column
-from models.base import Base
+from backend.models.base import Base
 
 class Counter(Base):
     __tablename__ = "counters"

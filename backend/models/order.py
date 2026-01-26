@@ -1,17 +1,18 @@
-# models/order.py
-from sqlalchemy import ForeignKey, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from models.base import Base
+from backend.models.base import Base
+from sqlalchemy.orm import mapped_column, Mapped,relationship
+from datetime import datetime
+from sqlalchemy import DateTime, func, ForeignKey
 
 class Order(Base):
-    __tablename__ = "orders"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
-
-    quantity: Mapped[int] = mapped_column(Integer, default=1)
-
-    user = relationship("User", back_populates="orders")
-    product = relationship("Product")
+    __tablename__="orders"
+    id:Mapped[int] = mapped_column(primary_key=True)
+    user_id:Mapped[int] = mapped_column(ForeignKey("users.id"))
+    total_amount:Mapped[int]
+    status:Mapped[str]
+    created_at:Mapped[datetime]=mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
+    )
+    user = relationship("User",back_populates="orders")
+    items=relationship("Order_item",back_populates="order")

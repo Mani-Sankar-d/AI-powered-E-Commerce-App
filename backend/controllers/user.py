@@ -2,8 +2,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import bcrypt
-
+from sqlalchemy.orm import selectinload
 from models.user import User
+from models.order import Order
 from utils.responses import ApiResponse
 from utils.errors import ApiError
 from auth.tokens import generate_access_token, generate_refresh_token
@@ -17,7 +18,6 @@ async def register_user(data: dict, db: AsyncSession):
     username = data.get("username")
     email = data.get("email")
     password = data.get("password")
-
     if not username or not email or not password:
         raise ApiError(400, "Invalid input")
 
@@ -78,7 +78,37 @@ async def get_profile(email: str, db: AsyncSession):
         select(User).where(User.email == email)
     )
     user = result.scalar_one_or_none()
-    return ApiResponse(200, user, "Found successfully")
+    result = await db.execute(
+        select(Order)
+        .options(selectinload(Order.items))
+        .where(Order.user_id == user.id)
+    )
+    orders = result.scalars().all()
+    data = {
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+        },
+        "orders": [
+            {
+                "order_id": order.id,
+                "total_amount": order.total_amount,
+                "status": order.status,
+                "items": [
+                    {
+                        "product_id": item.product_id,
+                        "quantity": item.quantity,
+                        "price_snapshot": item.price_snapshot,
+                    }
+                    for item in order.items
+                ],
+            }
+            for order in orders
+        ],
+    }
+
+    return ApiResponse(200, data, "Found successfully")
 
 async def logout(email: str, db: AsyncSession):
     result = await db.execute(
@@ -91,3 +121,4 @@ async def logout(email: str, db: AsyncSession):
         await db.commit()
 
     return ApiResponse(200, None, "Logged out successfully")
+

@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Body,Request
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from db import get_db
 from dependencies.auth import inject_email
 from controllers.product import (
@@ -8,7 +7,8 @@ from controllers.product import (
     add_product,
     get_product_by_id,
     get_products_by_name,
-    get_all_products
+    get_all_products,
+    buyproducts    
 )
 
 router = APIRouter()
@@ -71,3 +71,8 @@ async def product_by_exact_name(
     db: AsyncSession = Depends(get_db),
 ):
     return await get_products_by_name(name, db)
+
+
+@router.post("/buy")
+async def buy(product_ids:dict ,request:Request, _:None = Depends(inject_email),db:AsyncSession=Depends(get_db)):
+    return await buyproducts(product_ids["items"],request.state.user_id,db)

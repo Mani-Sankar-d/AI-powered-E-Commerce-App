@@ -11,29 +11,22 @@ from utils.errors import ApiError
 from db_init import init_db
 
 app = FastAPI()
+print("🔥 app.py LOADED")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://ai-powered-e-commerce-app-production.up.railway.app",
-        "https://ai-powered-e-commerce-app-copy-production.up.railway.app/api/products/"
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 @app.on_event("startup")
 async def startup():
     await init_db()
-
-
-@app.get("/")
-def f():
-    return {"ok": True}
-@app.get("/health")
-async def health():
-    return {"ok": True}
-# app.mount("/public", StaticFiles(directory="public"), name="public")
 
 app.include_router(user_router, prefix="/api/users")
 app.include_router(product_router, prefix="/api/products")

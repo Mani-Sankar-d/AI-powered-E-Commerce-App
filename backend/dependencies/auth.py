@@ -4,10 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
 import os
 
-from db import get_db
-from models.user import User
-from utils.errors import ApiError
-from auth.tokens import generate_access_token, generate_refresh_token
+from backend.db import get_db
+from backend.models.user import User
+from backend.utils.errors import ApiError
+from backend.auth.tokens import generate_access_token, generate_refresh_token
 
 async def inject_email(
     request: Request,

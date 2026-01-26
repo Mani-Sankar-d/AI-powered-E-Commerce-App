@@ -1,6 +1,6 @@
 # main.py
 import uvicorn
-from app import app
+from backend.app import app
 import asyncio
 
 

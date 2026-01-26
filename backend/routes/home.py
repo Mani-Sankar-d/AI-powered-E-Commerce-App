@@ -1,9 +1,9 @@
 # routes/home.py
 from fastapi import APIRouter, Depends
-from dependencies.auth import inject_email
-from controllers.product import get_all_products
+from backend.dependencies.auth import inject_email
+from backend.controllers.product import get_all_products
 from sqlalchemy.ext.asyncio import AsyncSession
-from db import get_db
+from backend.db import get_db
 router = APIRouter()
 
 @router.get("/")

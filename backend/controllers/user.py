@@ -3,11 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import bcrypt
 from sqlalchemy.orm import selectinload
-from models.user import User
-from models.order import Order
-from utils.responses import ApiResponse
-from utils.errors import ApiError
-from auth.tokens import generate_access_token, generate_refresh_token
+from backend.models.user import User
+from backend.models.order import Order
+from backend.utils.responses import ApiResponse
+from backend.utils.errors import ApiError
+from backend.auth.tokens import generate_access_token, generate_refresh_token
 
 COOKIE_OPTIONS = {
     "httponly": True,

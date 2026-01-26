@@ -1,12 +1,12 @@
 # routes/user.py
 from fastapi import APIRouter, Depends,Request
-from dependencies.auth import inject_email
-from controllers.user import register_user, login, logout, get_profile
-from db import get_db
+from backend.dependencies.auth import inject_email
+from backend.controllers.user import register_user, login, logout, get_profile
+from backend.db import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
-from utils.responses import ApiResponse
-from schemas.user import UserOut
+from backend.utils.responses import ApiResponse
+from backend.schemas.user import UserOut
 
 
 router = APIRouter()

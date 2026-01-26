@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Body,Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from db import get_db
-from dependencies.auth import inject_email
-from controllers.product import (
+from backend.db import get_db
+from backend.dependencies.auth import inject_email
+from backend.controllers.product import (
     get_products,
     add_product,
     get_product_by_id,

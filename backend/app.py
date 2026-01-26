@@ -4,11 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 
-from routes.user import router as user_router
-from routes.product import router as product_router
-from routes.home import router as home_router
-from utils.errors import ApiError
-from db_init import init_db
+from backend.routes.user import router as user_router
+from backend.routes.product import router as product_router
+from backend.routes.home import router as home_router
+from backend.utils.errors import ApiError
+from backend.db_init import init_db
 
 app = FastAPI()
 print("🔥 app.py LOADED")

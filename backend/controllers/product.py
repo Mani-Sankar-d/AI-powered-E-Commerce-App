@@ -2,15 +2,15 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from fastapi import UploadFile
-from utils.errors import ApiError
-from utils.responses import ApiResponse
-from models.product import Product
-from utils.cloudinary_utils import upload_on_cloudinary
-from db import get_db
+from backend.utils.errors import ApiError
+from backend.utils.responses import ApiResponse
+from backend.models.product import Product
+from backend.utils.cloudinary_utils import upload_on_cloudinary
+from backend.db import get_db
 from fastapi import Depends
 from sqlalchemy import select
-from models.order import Order
-from models.order_items import Order_item
+from backend.models.order import Order
+from backend.models.order_items import Order_item
 # GET /name/{name}
 async def get_products_by_name(name: str, db: AsyncSession):
     result = await db.execute(

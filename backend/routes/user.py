@@ -13,6 +13,7 @@ router = APIRouter()
 
 @router.post("/register-user")
 async def register(data: dict,db: AsyncSession = Depends(get_db)):
+    print("registter hit")
     return await register_user(data,db)
 
 @router.post("/login")
@@ -44,16 +45,16 @@ async def login_route(
         key="accessToken",
         value=cookies["accessToken"],
         httponly=True,
-        secure=True,        # ❗ False on localhost
-        samesite="none",
+        secure=False,        # ❗ False on localhost
+        samesite="lax",
         path="/"
     )
     resp.set_cookie(
         key="refreshToken",
         value=cookies["refreshToken"],
         httponly=True,
-        secure=True,        # ❗ False on localhost
-        samesite="none",
+        secure=False,        # ❗ False on localhost
+        samesite="lax",
         path="/"
     )
 

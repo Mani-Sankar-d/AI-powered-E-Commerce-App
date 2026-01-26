@@ -6,7 +6,11 @@ from utils.errors import ApiError
 from utils.responses import ApiResponse
 from models.product import Product
 from utils.cloudinary_utils import upload_on_cloudinary
-
+from db import get_db
+from fastapi import Depends
+from sqlalchemy import select
+from models.order import Order
+from models.order_items import Order_item
 # GET /name/{name}
 async def get_products_by_name(name: str, db: AsyncSession):
     result = await db.execute(
@@ -77,3 +81,31 @@ async def add_product(
     await db.refresh(product)
 
     return ApiResponse(201, product, "Product created successfully")
+
+async def buyproducts(product_ids:dict, user_Id:int, db:AsyncSession):    
+    total=0
+    product_list = {}
+    for pid,quantity in product_ids.items():
+        pid,quantity = int(pid),int(quantity)
+        if quantity<=0:
+            continue
+        stmt = select(Product).where(Product.id==pid)
+        product = await db.execute(stmt)
+        product = product.scalars().first()
+        if(product is None):
+            continue
+        product_list[pid] = product
+        total+=product.price * quantity
+    
+    neworder = Order(user_id=user_Id,total_amount=total,status="pending")
+    db.add(neworder)
+    await db.flush()
+
+    for pid,quantity in product_ids.items():
+        pid,quantity = int(pid),int(quantity)
+        if quantity<=0 or pid not in product_list:
+            continue
+        product = product_list[pid]
+        new_order_item = Order_item(order_id=neworder.id, product_id=pid,quantity=quantity,price_snapshot=product.price)
+        db.add(new_order_item)
+    await db.commit()

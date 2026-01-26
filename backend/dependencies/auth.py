@@ -15,8 +15,6 @@ async def inject_email(
 ):
     access_token = request.cookies.get("accessToken")
     refresh_token = request.cookies.get("refreshToken")
-    print(access_token)
-    print(refresh_token)
     if access_token:
         try:
             decoded = jwt.decode(

@@ -19,5 +19,5 @@ const BASE = API_BASE;
 
 export const API = {
   users: `${BASE}/api/users`,
-  products: `${BASE}/api/products`,
+  products: `${BASE}/api/products`
 };

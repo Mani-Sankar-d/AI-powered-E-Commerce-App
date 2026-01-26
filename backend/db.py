@@ -6,12 +6,6 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL not set")
-
-DATABASE_URL = DATABASE_URL.replace(
-    "postgresql://", "postgresql+asyncpg://"
-)
 
 engine = create_async_engine(
     DATABASE_URL,
@@ -27,3 +21,8 @@ AsyncSessionLocal = async_sessionmaker(
 async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
+
+
+#engine is creator of connections to db server to communicate these are limited pool pre ping is to prevent giving away dead connections to sesssions
+#session is a unit of work like when a request wants db it gets a session then from engine if any connection is free the session uses and return the connection after use
+#get db generates new session for each request then close after use 

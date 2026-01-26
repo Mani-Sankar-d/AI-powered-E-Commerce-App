@@ -8,26 +8,19 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // 🛒 CART STATE
+  const [cart, setCart] = useState({});
+
   async function fetchProducts() {
     try {
       const res = await fetch(`${API.products}/`, {
         credentials: "include",
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch products");
-      }
+      if (!res.ok) throw new Error("Failed to fetch products");
 
       const data = await res.json();
-      console.log("PRODUCT RESPONSE:", data);
-
-      /**
-       * ✅ YOUR BACKEND CONTRACT:
-       * products are in `message`
-       */
-      const list = Array.isArray(data.message)
-        ? data.message
-        : [];
+      const list = Array.isArray(data.message) ? data.message : [];
 
       setProducts(list);
       setAllProducts(list);
@@ -39,7 +32,6 @@ export default function Home() {
     }
   }
 
-  // fetch once (remove polling for now)
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -64,6 +56,43 @@ export default function Home() {
     }
   }, [query, allProducts]);
 
+  // ➕ ADD TO CART
+  const addToCart = (pid) => {
+    setCart((prev) => ({
+      ...prev,
+      [pid]: (prev[pid] || 0) + 1,
+    }));
+  };
+
+  // ➖ REMOVE FROM CART
+  const removeFromCart = (pid) => {
+    setCart((prev) => {
+      const copy = { ...prev };
+      copy[pid]--;
+      if (copy[pid] <= 0) delete copy[pid];
+      return copy;
+    });
+  };
+
+  // 💳 BUY
+  const buyNow = async () => {
+    try {
+      const res = await fetch(`${API.products}/buy`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ items: cart }),
+      });
+
+      if (!res.ok) throw new Error("Purchase failed");
+
+      setCart({});
+      alert("Order placed successfully");
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
   /* ---------------- Render ---------------- */
 
   if (loading) {
@@ -83,23 +112,20 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 px-6 py-6">
+    <div className="min-h-screen bg-slate-100 px-6 py-6 pb-32">
       <h1 className="text-3xl font-bold text-center mb-8">
         🛍 Explore Products
       </h1>
 
       {products.length === 0 ? (
-        <p className="text-center text-gray-500">
-          No products found.
-        </p>
+        <p className="text-center text-gray-500">No products found.</p>
       ) : (
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {products.map((p) => (
             <div
-              key={p.id ?? p._id}
+              key={p.id}
               className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden"
             >
-              {/* Image */}
               <div className="h-48 bg-gray-100">
                 <img
                   src={p.img_url}
@@ -108,38 +134,67 @@ export default function Home() {
                 />
               </div>
 
-              {/* Info */}
               <div className="p-4 flex flex-col gap-2">
                 <h3 className="font-semibold text-lg text-gray-800">
                   {p.name}
                 </h3>
 
-                {p.status && (
-                  <span
-                    className={`text-xs font-semibold ${
-                      p.status === "READY"
-                        ? "text-green-600"
-                        : p.status === "FAILED"
-                        ? "text-red-600"
-                        : "text-yellow-600"
-                    }`}
-                  >
-                    Status: {p.status}
-                  </span>
-                )}
-
-                {p.status === "READY" && p.description && (
-                  <p className="text-sm text-gray-600">
-                    {p.description}
-                  </p>
+                {p.description && (
+                  <p className="text-sm text-gray-600">{p.description}</p>
                 )}
 
                 <span className="text-xl font-bold text-blue-600">
                   ₹{p.price}
                 </span>
+
+                <button
+                  onClick={() => addToCart(p.id)}
+                  className="mt-2 bg-blue-600 text-white py-2 rounded"
+                >
+                  Add to Cart
+                </button>
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* 🛒 CART PANEL */}
+      {Object.keys(cart).length > 0 && (
+        <div className="fixed bottom-6 right-6 bg-white shadow-xl p-4 rounded w-64">
+          <p className="font-semibold mb-2">Cart</p>
+
+          {Object.entries(cart).map(([pid, qty]) => (
+            <div
+              key={pid}
+              className="flex justify-between items-center mb-1"
+            >
+              <span>
+                #{pid} × {qty}
+              </span>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => addToCart(pid)}
+                  className="px-2 bg-green-500 text-white rounded"
+                >
+                  +
+                </button>
+                <button
+                  onClick={() => removeFromCart(pid)}
+                  className="px-2 bg-red-500 text-white rounded"
+                >
+                  −
+                </button>
+              </div>
+            </div>
+          ))}
+
+          <button
+            onClick={buyNow}
+            className="mt-3 bg-green-600 text-white px-4 py-2 rounded w-full"
+          >
+            Buy
+          </button>
         </div>
       )}
     </div>

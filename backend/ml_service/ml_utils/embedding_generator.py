@@ -2,8 +2,14 @@ import torch
 import requests
 from PIL import Image
 import open_clip
-device = "cuda"
-#clip
+device = "cuda" if torch.cuda.is_available() else "cpu"
+from contextlib import nullcontext
+
+amp_ctx = (
+    torch.cuda.amp.autocast()
+    if torch.cuda.is_available()
+    else nullcontext()
+)
 
 model, _, preprocess = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
 tokenizer = open_clip.get_tokenizer('ViT-B-32')
@@ -14,10 +20,10 @@ def getImageEmbedding(url):
     image = preprocess(image).unsqueeze(0)
     image = image.to(device)
 
-    with torch.no_grad(), torch.cuda.amp.autocast():
+    with torch.no_grad(), amp_ctx:
         image_features = model.encode_image(image)
         image_features /= image_features.norm(dim=-1, keepdim=True)
-        return image_features.to("cpu")
+        return image_features.cpu().numpy()
 
 def getTextEmbedding(prompt):
     text = tokenizer([prompt])

@@ -7,12 +7,13 @@ from fastapi.responses import JSONResponse
 from backend.routes.user import router as user_router
 from backend.routes.product import router as product_router
 from backend.routes.home import router as home_router
+from backend.routes.semantic_search import router as search_router
 from backend.utils.errors import ApiError
 from backend.db_init import init_db
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
-print("🔥 app.py LOADED")
-
+app.mount("/images", StaticFiles(directory="D:/repos/Recommendation/"), name="images")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -32,6 +33,7 @@ async def startup():
 app.include_router(user_router, prefix="/api/users")
 app.include_router(product_router, prefix="/api/products")
 app.include_router(home_router, prefix="/api")
+app.include_router(search_router, prefix="/api/search")
 
 @app.exception_handler(ApiError)
 async def api_error_handler(request: Request, exc: ApiError):

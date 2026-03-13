@@ -47,9 +47,16 @@ export default function Navbar() {
 
       <div className="flex gap-2">
         <button
-        onClick={() => navigate("/profile")}
-        className="bg-indigo-600 text-white px-4 py-2 rounded">
-        Profile
+          onClick={() => navigate("/search_by_text")}
+          className="bg-purple-600 text-white px-4 py-2 rounded"
+        >
+          🔍 Image Search
+        </button>
+        <button
+          onClick={() => navigate("/profile")}
+          className="bg-indigo-600 text-white px-4 py-2 rounded"
+        >
+          Profile
         </button>
         <button
           onClick={() => navigate("/add-product")}

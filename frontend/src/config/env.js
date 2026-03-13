@@ -19,5 +19,6 @@ const BASE = API_BASE;
 
 export const API = {
   users: `${BASE}/api/users`,
-  products: `${BASE}/api/products`
+  products: `${BASE}/api/products`,
+  search:   `${import.meta.env.VITE_API_BASE_URL}/api/search`
 };

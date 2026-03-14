@@ -75,3 +75,5 @@ Thumbs.db
 .cache/
 .tmp/
 *.faiss
+*.index
+*.pkl

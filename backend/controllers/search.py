@@ -11,8 +11,8 @@ model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 model.eval()
-def image_to_embedding(path):
-    img = Image.open(path).convert("RGB")
+def image_to_embedding(stream):
+    img = Image.open(stream).convert("RGB")
     inputs = processor(
         images=img,
         return_tensors="pt"
@@ -32,25 +32,24 @@ def text_to_embedding(text):
     print("text embedding generation completed")
     embedding = embedding.cpu().numpy()[0]
     return embedding
-
-# def display(I, paths):
-#     for idx in I[0]:
-#         Image.open(paths[idx]).show()
 def search(query_vec,index_path):
     query_vec = query_vec / np.linalg.norm(query_vec)
     with open("paths.pkl", "rb") as f:
         paths = pickle.load(f)
     index = faiss.read_index(index_path)
-    D,I = index.search(query_vec.reshape(1,-1),15)
+    D,I = index.search(query_vec.reshape(1,-1),25)
     result_paths = [paths[i] for i in I[0]]
     return I,result_paths
-def search_by_image(image_path,index_path="fashion.index"):
-    img_embedding = image_to_embedding(image_path)
-    return search(img_embedding,index_path)
+def search_by_image(image,index_path="fashion.index"):
+    img_embedding = image_to_embedding(image)
+    I,paths = search(img_embedding,index_path)
+    image_urls = [f"/images{p[1:]}" for p in paths]
+    # print(image_urls[0])
+    return image_urls
 
 def search_by_text(text,index_path="fashion.index"):
     text_embedding = text_to_embedding(text)
     I,paths = search(text_embedding,index_path)
     image_urls = [f"/images{p[1:]}" for p in paths]
-    print(image_urls[0])
+    # print(image_urls[0])
     return image_urls

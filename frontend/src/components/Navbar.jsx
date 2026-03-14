@@ -50,7 +50,13 @@ export default function Navbar() {
           onClick={() => navigate("/search_by_text")}
           className="bg-purple-600 text-white px-4 py-2 rounded"
         >
-          🔍 Image Search
+          🔍 Text Search
+        </button>
+        <button
+          onClick={() => navigate("/search_by_image")}
+          className="bg-pink-600 text-white px-4 py-2 rounded"
+        >
+          🖼️ Image Search
         </button>
         <button
           onClick={() => navigate("/profile")}

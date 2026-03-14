@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.db import get_db
 from backend.dependencies.auth import inject_email
 from backend.controllers.search import search_by_text,search_by_image
-
+import io
 router = APIRouter()
 
 @router.post('/search_by_text')
@@ -20,4 +20,6 @@ async def text_query(
         db:AsyncSession = Depends(get_db),
         _: None = Depends(inject_email)
 ):
-    return search_by_image(image)
+    contents = await image.read()
+    stream = io.BytesIO(contents)
+    return search_by_image(stream)

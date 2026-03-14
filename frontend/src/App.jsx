@@ -6,28 +6,22 @@ import Home from "./components/Home";
 import AddProduct from "./components/AddProduct";
 import Profile from "./components/Profile";
 import TextImageSearch from "./components/TextImageSearch";
+import ImageSearch from "./components/ImageSearch";
 
 export default function App() {
   return (
-    <>
-      <BrowserRouter>
-
-        <Navbar />
-
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/add-product" element={<AddProduct />} />
-
-          {/* NEW ROUTE */}
-          <Route path="/search_by_text" element={<TextImageSearch />} />
-
-        </Routes>
-
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/add-product" element={<AddProduct />} />
+        <Route path="/search_by_text" element={<TextImageSearch />} />
+        <Route path="/search_by_image" element={<ImageSearch />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

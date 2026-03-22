@@ -1,5 +1,3 @@
-Here’s a clean, professional README you can use:
-
 AI-Powered E-commerce Backend
 
 This project is a backend system for an e-commerce platform enhanced with AI-driven product search and recommendations. It combines traditional backend development with modern multimodal retrieval techniques.

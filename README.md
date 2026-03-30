@@ -31,6 +31,8 @@ authentication
 product and order management
 file uploads
 API responses and error handling
+
+
 2. ML Service
 
 A background worker continuously processes new products:

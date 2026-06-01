@@ -25,7 +25,7 @@ async def all_products(
 # POST /api/products/product-name
 @router.post("/product-name")
 async def products_by_name(
-    product_name: str = Body(..., embed=True),
+    product_name: str = Body(..., embed=True),  # this extracts the product_name key from incoming json and Body makes it extract from json otherwise it would expect product_name as query param
     _: None = Depends(inject_email),
     db: AsyncSession = Depends(get_db),
 ):
@@ -38,8 +38,8 @@ async def new_product(
     request:Request,
     name: str = Body(...),
     price: int = Body(...),
-    description: str | None = Body(None),
-    image: UploadFile = File(...),
+    description: str | None = Body(None),# None means optional
+    image: UploadFile = File(...),# ... means required
     _: None = Depends(inject_email),
     db: AsyncSession = Depends(get_db),
 ):
@@ -54,9 +54,9 @@ async def new_product(
 
 
 # GET /api/products/id/{id}
-@router.get("/id/{id}")
+@router.get("/id/{id}") # here id is declared as path param
 async def product_by_id(
-    id: int,
+    id: int,  # normally this would be considered query param but since its mentioned in path so its a path param
     _: None = Depends(inject_email),
     db: AsyncSession = Depends(get_db),
 ):

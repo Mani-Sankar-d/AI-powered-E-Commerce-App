@@ -8,7 +8,7 @@ def generate_access_token(user):
         "id": user.id,
         "username": user.username,
         "email": user.email,
-        "exp": datetime.utcnow() + timedelta(minutes=10)
+        "exp": datetime.utcnow() + timedelta(seconds=10)
     }
     return jwt.encode(
         payload,
@@ -19,7 +19,7 @@ def generate_access_token(user):
 def generate_refresh_token(user):
     payload = {
         "id": user.id,
-        "exp": datetime.utcnow() + timedelta(days=1)
+        "exp": datetime.utcnow() + timedelta(minutes=2)
     }
     return jwt.encode(
         payload,

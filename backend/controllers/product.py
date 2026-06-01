@@ -16,7 +16,7 @@ async def get_products_by_name(name: str, db: AsyncSession):
     result = await db.execute(
         select(Product).where(Product.name == name)
     )
-    products = result.scalars().all()
+    products = result.scalars().all()  # result is like [(Product(),),..] .scalars convert to [Product(),Product(),..] .all etc tells how many to keep
     return ApiResponse(200, f"Got all products named {name}", products)
 
 # GET /

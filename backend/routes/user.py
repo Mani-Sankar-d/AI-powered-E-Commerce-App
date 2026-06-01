@@ -1,5 +1,9 @@
 # routes/user.py
 from fastapi import APIRouter, Depends,Request
+import jwt
+import os
+from backend.utils.errors import ApiError
+from backend.auth.tokens import generate_access_token,generate_refresh_token
 from backend.dependencies.auth import inject_email
 from backend.controllers.user import register_user, login, logout, get_profile
 from backend.db import get_db
@@ -7,13 +11,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
 from backend.utils.responses import ApiResponse
 from backend.schemas.user import UserOut
-
+from backend.models.user import User
 
 router = APIRouter()
 
 @router.post("/register-user")
 async def register(data: dict,db: AsyncSession = Depends(get_db)):
-    print("registter hit")
+    # print("registter hit")
     return await register_user(data,db)
 
 @router.post("/login")
@@ -45,7 +49,7 @@ async def login_route(
         key="accessToken",
         value=cookies["accessToken"],
         httponly=True,
-        secure=False,        # ❗ False on localhost
+        secure=False,
         samesite="lax",
         path="/"
     )
@@ -53,7 +57,7 @@ async def login_route(
         key="refreshToken",
         value=cookies["refreshToken"],
         httponly=True,
-        secure=False,        # ❗ False on localhost
+        secure=False,
         samesite="lax",
         path="/"
     )
@@ -96,3 +100,54 @@ async def profile(
     db: AsyncSession = Depends(get_db),
 ):
     return await get_profile(request.state.user_email, db)
+
+@router.post("/refresh")
+async def refresh(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    refresh_token = request.cookies.get("refreshToken")
+    if not refresh_token:
+        print("Missing refresh token")
+        raise ApiError(401, "Login first")
+    try:
+        # print(f"refresh_token:{refresh_token}")
+        decoded = jwt.decode(
+            refresh_token,
+            os.getenv("REFRESH_TOKEN_SECRET"),
+            algorithms=["HS256"]
+        )
+    except Exception as e:
+        # print(type(e))
+        # print(e)
+        raise ApiError(401, "Invalid refresh token")
+
+    user = await db.get(User, decoded["id"])
+    if not user:
+        raise ApiError(401, "User not found")
+    if user.refresh_token != refresh_token:
+        raise ApiError(401, "Refresh token revoked")
+    new_access = generate_access_token(user)
+    new_refresh = generate_refresh_token(user)
+    user.refresh_token = new_refresh
+    await db.commit()
+    resp = JSONResponse(
+        content=ApiResponse(200, None, "Refreshed successfully").dict()
+    )
+    resp.set_cookie(
+        key="accessToken",
+        value=new_access,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        path="/"
+    )
+    resp.set_cookie(
+        key="refreshToken",
+        value=new_refresh,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        path="/"
+    )
+    return resp

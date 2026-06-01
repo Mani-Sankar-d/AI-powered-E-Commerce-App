@@ -22,30 +22,25 @@ EMBED_DIM = 512
 
 def load_faiss_index():
     if FAISS_PATH.exists():
-        print("📦 Loading FAISS index from disk")
+        print("Loading FAISS index from disk")
         return faiss.read_index(str(FAISS_PATH))
 
-    print("🆕 Creating new FAISS index")
+    print("Creating new FAISS index")
     return faiss.IndexIDMap(faiss.IndexFlatIP(EMBED_DIM))
 
 
 index = load_faiss_index()
 
 
-# -------------------- PRODUCT PROCESSOR --------------------
 
 async def process_product(product: Product, db: AsyncSession):
     try:
-        # 1️⃣ Generate caption (SYNC)
         caption = generate_caption({
             "image": product.img_url,
             "description": product.user_description
         })
-
-        # 2️⃣ Generate embedding (SYNC)
         embedding = getImageEmbedding(product.img_url)
 
-        # 3️⃣ Add to FAISS (SYNC)
         add_embedding(
             index=index,
             embedding=embedding,
@@ -53,14 +48,13 @@ async def process_product(product: Product, db: AsyncSession):
             faiss_path=FAISS_PATH
         )
 
-        # 4️⃣ Update DB
         product.description = caption["caption"]
         product.faiss_id = product.id
         product.indexed = True
         product.status = "READY"
 
         await db.commit()
-        print(f"✅ Product {product.id} processed")
+        print(f"Product {product.id} processed")
 
     except Exception as e:
         await db.rollback()
@@ -69,14 +63,12 @@ async def process_product(product: Product, db: AsyncSession):
         product.ml_error = str(e)
 
         await db.commit()
-        print(f"❌ Product {product.id} failed: {e}")
+        print(f"Product {product.id} failed: {e}")
 
 
-# -------------------- WORKER LOOP --------------------
 
 async def worker_loop():
-    print("🚀 ML Worker started")
-    print("🔌 WORKER DB URL:", engine.url)
+    print("ML Worker started")
 
     while True:
         async with AsyncSessionLocal() as db:
@@ -90,20 +82,16 @@ async def worker_loop():
             product = result.scalar_one_or_none()
 
             if not product:
-                print("⏳ No pending products")
                 await asyncio.sleep(3)
                 continue
 
-            print(f"📥 Picked product {product.id}")
 
             product.status = "PROCESSING"
             await db.commit()
 
-            # 🔥 THIS IS CORRECT
             await process_product(product, db)
 
 
-# -------------------- ENTRYPOINT --------------------
 
 if __name__ == "__main__":
     asyncio.run(worker_loop())

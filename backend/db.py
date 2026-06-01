@@ -21,7 +21,19 @@ AsyncSessionLocal = async_sessionmaker(
 async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
-
+# Then Why async with?
+#
+# Because when exiting:
+#
+# async with AsyncSessionLocal() as session:
+#
+# SQLAlchemy may need async cleanup like:
+#
+# rollback
+# releasing connection to pool
+# transaction handling
+#
+# Those involve async operations.
 
 #engine is creator of connections to db server to communicate these are limited pool pre ping is to prevent giving away dead connections to sesssions
 #session is a unit of work like when a request wants db it gets a session then from engine if any connection is free the session uses and return the connection after use

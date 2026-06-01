@@ -13,7 +13,7 @@ cloudinary.config(
 )
 
 async def upload_on_cloudinary(buffer: bytes, folder="products"):
-    result = cloudinary.uploader.upload(
+    result = cloudinary.uploader.upload(  # this is synchronous so async has no meaning
         buffer,
         folder=folder
     )

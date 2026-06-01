@@ -8,7 +8,6 @@ import os
 import numpy as np
 
 
-# -------------------- CONFIG --------------------
 
 logging.set_verbosity_error()
 with open("paths.pkl","rb") as f:
@@ -22,12 +21,10 @@ BLIP_MODEL_PATH = os.getenv(
     "D:/repos/finetuned_models/fine_tuned_blip_fashion"
 )
 
-# -------------------- FAISS --------------------
 
 EMBED_DIM = 512
 faiss_index = faiss.read_index("fashion.index")
 
-# -------------------- MODELS (LOAD ONCE) --------------------
 
 print(f"[ML] Loading models on {DEVICE}")
 
@@ -45,7 +42,6 @@ clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 clip_model.eval()
 
-# -------------------- HELPERS --------------------
 
 def _load_image(url: str) -> Image.Image:
     response = requests.get(
@@ -57,7 +53,6 @@ def _load_image(url: str) -> Image.Image:
     img = Image.open(BytesIO(response.content)).convert("RGB")
     return img
 
-# -------------------- TASKS --------------------
 
 def generate_caption(payload: dict) -> dict:
     if "image" not in payload:

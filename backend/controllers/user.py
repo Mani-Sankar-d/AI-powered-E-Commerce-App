@@ -15,7 +15,7 @@ COOKIE_OPTIONS = {
 }
 
 async def register_user(data: dict, db: AsyncSession):
-    username = data.get("username")
+    username = data.get("username")#If key exists return value, otherwise return None so get is safer  than subscripting like data["username"]
     email = data.get("email")
     password = data.get("password")
     if not username or not email or not password:
@@ -55,7 +55,7 @@ async def login(data: dict, db: AsyncSession):
     if not user:
         raise ApiError(400, "Register first then login")
 
-    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):# encode converts both to bytes then extract salt from hash and verify passwrod
         raise ApiError(400, "Invalid credentials")
 
     access = generate_access_token(user)

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { API } from "../config/env";
+import { apiFetch } from "./api";
 
 export default function TextImageSearch() {
   const [query, setQuery] = useState("");
@@ -14,7 +15,7 @@ export default function TextImageSearch() {
     setError("");
 
     try {
-      const response = await fetch(`${API.search}/search_by_text`, {
+      const response = await apiFetch(`${API.search}/search_by_text`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -40,7 +41,7 @@ export default function TextImageSearch() {
 
   return (
     <div className="min-h-screen bg-slate-100 px-6 py-6">
-      <h1 className="text-3xl font-bold mb-6">🔍 Image Search</h1>
+      <h1 className="text-3xl font-bold mb-6">Image Search</h1>
 
       <div className="flex gap-2 mb-8">
         <input
@@ -49,12 +50,11 @@ export default function TextImageSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="px-3 py-2 border rounded w-80 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="px-3 py-2 border rounded w-80 focus:ring-2 focus:ring-purple-500"
         />
         <button
           onClick={searchImages}
-          disabled={loading}
-          className="bg-purple-600 text-white px-5 py-2 rounded disabled:opacity-50"
+          className="bg-purple-600 text-white px-5 py-2 rounded"
         >
           {loading ? "Searching…" : "Search by Text"}
         </button>

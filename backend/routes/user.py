@@ -49,16 +49,16 @@ async def login_route(
         key="accessToken",
         value=cookies["accessToken"],
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         path="/"
     )
     resp.set_cookie(
         key="refreshToken",
         value=cookies["refreshToken"],
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,# if samesite lax then secure true to protect csrf and esure communiction https
+        samesite="none", #samesite lax will not allow different domain to attach cookies  to request so keep none
         path="/"
     )
 
@@ -67,9 +67,23 @@ async def login_route(
 @router.post("/logout")
 async def logout_route(
     request: Request,
-    _: None = Depends(inject_email),
     db: AsyncSession = Depends(get_db),
 ):
+    access_token = request.cookies.get("accessToken")
+    print(access_token)
+    if not access_token:
+        raise ApiError(403, "Not logged in")
+    try:
+        decoded = jwt.decode(
+            access_token,
+            os.getenv("ACCESS_TOKEN_SECRET"),
+            algorithms=["HS256"]
+        )
+    except jwt.PyJWTError:
+        raise ApiError(status_code=401,message="Unauthorized")
+    request.state.user_id = decoded["id"]
+    request.state.user_email = decoded["email"]
+
     # revoke refresh token in DB
     await logout(request.state.user_email, db)
 
@@ -107,6 +121,8 @@ async def refresh(
     db: AsyncSession = Depends(get_db),
 ):
     refresh_token = request.cookies.get("refreshToken")
+    # access_token = request.cookies.get("accessToken")
+    # print(access_token)
     if not refresh_token:
         print("Missing refresh token")
         raise ApiError(401, "Login first")
@@ -138,16 +154,16 @@ async def refresh(
         key="accessToken",
         value=new_access,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         path="/"
     )
     resp.set_cookie(
         key="refreshToken",
         value=new_refresh,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         path="/"
     )
     return resp

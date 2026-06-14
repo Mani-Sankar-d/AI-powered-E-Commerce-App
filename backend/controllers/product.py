@@ -65,7 +65,6 @@ async def add_product(
     buffer = await image.read()
     result = await upload_on_cloudinary(buffer)
     image_url = result["secure_url"]
-
     product = Product(
         name=name,
         price=price,
@@ -75,12 +74,12 @@ async def add_product(
         indexed=False,
         status="PENDING"
     )
-
     db.add(product)
     await db.commit()
     await db.refresh(product)
 
     return ApiResponse(201, product, "Product created successfully")
+
 
 async def buyproducts(product_ids:dict, user_Id:int, db:AsyncSession):    
     total=0

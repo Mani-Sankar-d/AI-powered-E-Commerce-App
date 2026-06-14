@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API } from "../config/env";
+import { apiFetch } from "./api";
 
 export default function Login() {
-  console.log("ENV:", import.meta.env);
-  console.log("API BASE:", import.meta.env.VITE_API_BASE_URL);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -26,11 +24,11 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API.users}/login`, {
+      const res = await apiFetch(`${API.users}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password, remember }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
@@ -47,14 +45,13 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-green-300 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
         <h2 className="text-2xl font-bold text-center mb-6">
           Sign in to your account
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
@@ -63,12 +60,11 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
               placeholder="you@example.com"
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Password
@@ -77,21 +73,9 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
+              className="mt-1 w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              placeholder="*******"
             />
-          </div>
-
-          {/* Remember */}
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-              />
-              Remember me
-            </label>
           </div>
 
           {error && (
@@ -99,8 +83,7 @@ export default function Login() {
           )}
 
           <button
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 disabled:opacity-50"
+            className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>

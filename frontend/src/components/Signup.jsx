@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API } from "../config/env";
+import { apiFetch } from "./api";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
@@ -29,7 +30,7 @@ export default function Signup() {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API.users}/register-user`, {
+      const res = await apiFetch(`${API.users}/register-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -61,7 +62,6 @@ export default function Signup() {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Username
@@ -74,7 +74,6 @@ export default function Signup() {
             />
           </div>
 
-          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
@@ -88,7 +87,6 @@ export default function Signup() {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Password
@@ -98,11 +96,10 @@ export default function Signup() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
+              placeholder="********"
             />
           </div>
 
-          {/* Confirm */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Confirm Password
@@ -112,7 +109,7 @@ export default function Signup() {
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               className="mt-1 w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
+              placeholder="********"
             />
           </div>
 
@@ -121,8 +118,7 @@ export default function Signup() {
           )}
 
           <button
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 disabled:opacity-50"
+            className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700"
           >
             {loading ? "Creating account..." : "Sign Up"}
           </button>

@@ -20,3 +20,4 @@ async def inject_email(
         raise ApiError(status_code=401,message="Unauthorized")
     request.state.user_id = decoded["id"]
     request.state.user_email = decoded["email"]
+

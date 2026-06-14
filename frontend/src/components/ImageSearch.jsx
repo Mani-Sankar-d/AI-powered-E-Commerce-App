@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { API } from "../config/env";
+import { apiFetch } from "./api";
 
 export default function ImageSearch() {
   const [file, setFile] = useState(null);
@@ -26,10 +27,10 @@ export default function ImageSearch() {
       const fd = new FormData();
       fd.append("image", file);
 
-      const response = await fetch(`${API.search}/search_by_image`, {
+      const response = await apiFetch(`${API.search}/search_by_image`, {
         method: "POST",
         credentials: "include",
-        body: fd, // FormData — do NOT set Content-Type, browser sets it with boundary
+        body: fd,
       });
 
       if (response.status === 401) throw new Error("Unauthorized — please log in again");
@@ -38,7 +39,6 @@ export default function ImageSearch() {
       const data = await response.json();
       setImages(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Search error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -47,7 +47,7 @@ export default function ImageSearch() {
 
   return (
     <div className="min-h-screen bg-slate-100 px-6 py-6">
-      <h1 className="text-3xl font-bold mb-6">🖼️ Search by Image</h1>
+      <h1 className="text-3xl font-bold mb-6">Search by Image</h1>
 
       <div className="flex items-center gap-4 mb-8">
         <input
@@ -58,14 +58,12 @@ export default function ImageSearch() {
         />
         <button
           onClick={searchImages}
-          disabled={loading || !file}
-          className="bg-purple-600 text-white px-5 py-2 rounded disabled:opacity-50"
+          className="bg-purple-600 text-white px-5 py-2 rounded"
         >
           {loading ? "Searching…" : "Search by Image"}
         </button>
       </div>
 
-      {/* Preview of uploaded image */}
       {preview && (
         <div className="mb-8">
           <p className="text-sm text-gray-500 mb-2">Your image:</p>

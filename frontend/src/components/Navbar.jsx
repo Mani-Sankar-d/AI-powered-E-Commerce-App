@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { API } from "../config/env";
+import { apiFetch } from "./api";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ export default function Navbar() {
 
   const logout = async () => {
     try {
-      await fetch(`${API.users}/logout`, {
+      await apiFetch(`${API.users}/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -50,13 +51,13 @@ export default function Navbar() {
           onClick={() => navigate("/search_by_text")}
           className="bg-purple-600 text-white px-4 py-2 rounded"
         >
-          🔍 Text Search
+           Text Search
         </button>
         <button
           onClick={() => navigate("/search_by_image")}
           className="bg-pink-600 text-white px-4 py-2 rounded"
         >
-          🖼️ Image Search
+           Image Search
         </button>
         <button
           onClick={() => navigate("/profile")}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API } from "../config/env";
+import { apiFetch } from "./api";
 
 export default function Profile() {
   const [data, setData] = useState(null);
@@ -8,7 +9,7 @@ export default function Profile() {
 
   async function fetchProfile() {
     try {
-      const res = await fetch(`${API.users}/get-profile`, {
+      const res = await apiFetch(`${API.users}/get-profile`, {
         credentials: "include",
       });
 
@@ -17,11 +18,6 @@ export default function Profile() {
       }
 
       const json = await res.json();
-      console.log("PROFILE RESPONSE:", json);
-
-      /**
-       * 🔑 Handle ALL ApiResponse shapes safely
-       */
       const payload =
         json.data ??
         json.message?.data ??
@@ -33,7 +29,6 @@ export default function Profile() {
 
       setData(payload);
     } catch (e) {
-      console.error(e);
       setError(e.message);
     } finally {
       setLoading(false);
@@ -44,7 +39,6 @@ export default function Profile() {
     fetchProfile();
   }, []);
 
-  /* ---------- RENDER FLOW (ORDER MATTERS) ---------- */
 
   if (loading) {
     return (
@@ -74,16 +68,14 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-slate-100 px-6 py-6">
-      <h1 className="text-3xl font-bold mb-6">👤 Profile</h1>
+      <h1 className="text-3xl font-bold mb-6">Profile</h1>
 
-      {/* USER INFO */}
       <div className="bg-white p-4 rounded shadow mb-8">
         <p><b>Username:</b> {user.username}</p>
         <p><b>Email:</b> {user.email}</p>
       </div>
 
-      {/* ORDERS */}
-      <h2 className="text-2xl font-semibold mb-4">📦 Orders</h2>
+      <h2 className="text-2xl font-semibold mb-4">Orders</h2>
 
       {orders.length === 0 ? (
         <p className="text-gray-500">No orders yet.</p>
@@ -112,9 +104,9 @@ export default function Profile() {
                     className="flex justify-between text-sm py-1"
                   >
                     <span>
-                      Product #{item.product_id} × {item.quantity}
+                      Product id: {item.product_id} × {item.quantity}
                     </span>
-                    <span>₹{item.price_snapshot}</span>
+                    <span>Rs.{item.price_snapshot}</span>
                   </div>
                 ))}
               </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API } from "../config/env";
+import { apiFetch } from "./api";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -8,12 +9,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // 🛒 CART STATE
   const [cart, setCart] = useState({});
 
   async function fetchProducts() {
     try {
-      const res = await fetch(`${API.products}/`, {
+      const res = await apiFetch(`${API.products}/`, {
         credentials: "include",
       });
 
@@ -36,14 +36,12 @@ export default function Home() {
     fetchProducts();
   }, []);
 
-  // listen to navbar search
   useEffect(() => {
     const handler = (e) => setQuery(e.detail || "");
     window.addEventListener("product-search", handler);
     return () => window.removeEventListener("product-search", handler);
   }, []);
 
-  // local search
   useEffect(() => {
     if (!query.trim()) {
       setProducts(allProducts);
@@ -56,7 +54,6 @@ export default function Home() {
     }
   }, [query, allProducts]);
 
-  // ➕ ADD TO CART
   const addToCart = (pid) => {
     setCart((prev) => ({
       ...prev,
@@ -64,7 +61,6 @@ export default function Home() {
     }));
   };
 
-  // ➖ REMOVE FROM CART
   const removeFromCart = (pid) => {
     setCart((prev) => {
       const copy = { ...prev };
@@ -74,10 +70,9 @@ export default function Home() {
     });
   };
 
-  // 💳 BUY
   const buyNow = async () => {
     try {
-      const res = await fetch(`${API.products}/buy`, {
+      const res = await apiFetch(`${API.products}/buy`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -93,7 +88,6 @@ export default function Home() {
     }
   };
 
-  /* ---------------- Render ---------------- */
 
   if (loading) {
     return (
@@ -159,7 +153,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* 🛒 CART PANEL */}
       {Object.keys(cart).length > 0 && (
         <div className="fixed bottom-6 right-6 bg-white shadow-xl p-4 rounded w-64">
           <p className="font-semibold mb-2">Cart</p>

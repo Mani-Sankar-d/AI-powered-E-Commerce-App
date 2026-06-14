@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../config/env";
+import { apiFetch } from "./api";
 
 export default function AddProduct() {
   const nav = useNavigate();
@@ -26,7 +27,7 @@ export default function AddProduct() {
       fd.append("image", image);
       if (desc) fd.append("description", desc);
 
-      const res = await fetch(`${API.products}/new-product`, {
+      const res = await apiFetch(`${API.products}/new-product`, {
         method: "POST",
         credentials: "include",
         body: fd,
@@ -80,7 +81,6 @@ export default function AddProduct() {
         {err && <p className="text-red-500 text-sm">{err}</p>}
 
         <button
-          disabled={loading}
           className="w-full bg-blue-600 text-white py-2 rounded"
         >
           {loading ? "Uploading…" : "Add Product"}

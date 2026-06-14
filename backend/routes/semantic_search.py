@@ -6,20 +6,23 @@ from backend.controllers.search import search_by_text,search_by_image
 import io
 router = APIRouter()
 
+
+
 @router.post('/search_by_text')
 async def text_query(
         text:str=Body(...),
         db:AsyncSession = Depends(get_db),
         _: None = Depends(inject_email)
 ):
-    return search_by_text(text)
-
+    resp = await search_by_text(text,db)
+    return resp
 @router.post('/search_by_image')
-async def text_query(
+async def image_query(
         image: UploadFile = File(...),
         db:AsyncSession = Depends(get_db),
         _: None = Depends(inject_email)
 ):
     contents = await image.read()
     stream = io.BytesIO(contents)
-    return search_by_image(stream)
+    resp = await search_by_image(stream,db)
+    return resp

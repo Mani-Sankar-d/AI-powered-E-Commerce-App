@@ -11,6 +11,7 @@ from fastapi import Depends
 from sqlalchemy import select
 from backend.models.order import Order
 from backend.models.order_items import Order_item
+
 # GET /name/{name}
 async def get_products_by_name(name: str, db: AsyncSession):
     result = await db.execute(
@@ -50,6 +51,7 @@ async def get_products(product_name: str, db: AsyncSession):
     return ApiResponse(200, "Found", products)
 
 # POST /new-product
+
 async def add_product(
     *,
     db: AsyncSession,
@@ -65,6 +67,7 @@ async def add_product(
     buffer = await image.read()
     result = await upload_on_cloudinary(buffer)
     image_url = result["secure_url"]
+
     product = Product(
         name=name,
         price=price,
@@ -77,7 +80,6 @@ async def add_product(
     db.add(product)
     await db.commit()
     await db.refresh(product)
-
     return ApiResponse(201, product, "Product created successfully")
 
 

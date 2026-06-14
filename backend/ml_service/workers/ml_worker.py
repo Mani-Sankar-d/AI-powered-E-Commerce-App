@@ -1,14 +1,11 @@
 import asyncio
 from pathlib import Path
-
-import faiss
+import faiss,os
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.db import AsyncSessionLocal, engine
 from backend.models.product import Product
-
-# 🔴 ML FUNCTIONS ARE SYNC
 from backend.ml_service.ml_utils.model import generate_caption
 from backend.ml_service.ml_utils.embedding_generator import getImageEmbedding
 from backend.ml_service.ml_utils.faiss import add_embedding
@@ -16,7 +13,7 @@ from backend.ml_service.ml_utils.faiss import add_embedding
 
 
 BASE_DIR = Path(__file__).resolve().parent
-FAISS_PATH = BASE_DIR / "products.faiss"
+FAISS_PATH = os.getenv("INDEX_PATH")
 EMBED_DIM = 512
 
 
@@ -30,8 +27,6 @@ def load_faiss_index():
 
 
 index = load_faiss_index()
-
-
 
 async def process_product(product: Product, db: AsyncSession):
     try:

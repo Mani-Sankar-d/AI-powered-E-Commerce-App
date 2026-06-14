@@ -85,15 +85,21 @@ export default function ImageSearch() {
         className="grid gap-4"
         style={{ gridTemplateColumns: "repeat(auto-fill, 200px)" }}
       >
-        {images.map((img, index) => (
+        {images.map((product) => (
+        <div key={product.id}>
           <img
-            key={index}
-            src={`${import.meta.env.VITE_API_BASE_URL}${img}`}
-            alt={`result-${index}`}
+            src={product.img_url}
+            alt={product.name}
             className="w-48 h-48 object-cover rounded-xl shadow"
-            onError={(e) => { e.target.style.display = "none"; }}
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
           />
-        ))}
+
+          <p>{product.name}</p>
+          <p>Rs. {product.price}</p>
+        </div>
+      ))}
       </div>
     </div>
   );
